@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questions</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/flowbite/css/flowbite.min.css" rel="stylesheet">
+
+</head>
+<body class="bg-gray-900 text-gray-400 p-8">
+
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-5xl font-bold bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-900 bg-clip-text text-transparent">Quizzeo</h1>
+   
+    <div class="flex space-x-4">
+
+      <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold py-2 px-4 rounded">Profile</button>
+      <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold py-2 px-4 rounded">Choix du Quizz</button>
+    
+    </div>
+
+  </div>
+
+
+  <div id="quiz-title" class="text-center mb-8 p-4 bg-gray-900 rounded-md">
+    <h2 class="text-2xl font-bold mb-2"></h2>
+  </div>
+
+ 
+  <div id="questions-container" class="max-w-xl mx-auto">
+    <!-- Les questions seront générées ici -->
+  </div>
+
+  <!-- Bouton pour envoyer les réponses  et bouton retour a la selection de quizz -->
+  <div class="flex justify-center mt-8">
+    <button id="submit-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold py-2 px-4 rounded">Envoyer</button>
+  </div>
+
+ 
+  <a id="back-link" href="Selection.html" class="bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold py-2 px-4 rounded hidden">Retour à la sélection de quiz</a>
+
+  <!-- Input caché pour les questions au format JSON exemple pour test -->
+  <input type="hidden" name="questions" id="questions" value='{
+    "title": "Quizz Sur les Animaux",
+    "questions": [
+      {
+        "question": "Quel est le plus grand animal terrestre ?",
+        "propositions": [
+          {"value": 1, "text": "Éléphant"},
+          {"value": 2, "text": "Girafe"},
+          {"value": 3, "text": "Rhinocéros"},
+          {"value": 4, "text": "Hippopotame"}
+        ],
+        "answer": 2
+      },
+      {
+        "question": "Quel animal est souvent associé à la sagesse dans la culture occidentale ?",
+        "propositions": [
+          {"value": 1, "text": "Chat"},
+          {"value": 2, "text": "Hibou"},
+          {"value": 3, "text": "Serpent"},
+          {"value": 4, "text": "Lion"}
+        ],
+        "answer": 2
+      },
+      {
+        "question": "Quel animal est connu pour sa capacité à changer de couleur ?",
+        "propositions": [
+          {"value": 1, "text": "Caméléon"},
+          {"value": 2, "text": "Grenouille"},
+          {"value": 3, "text": "Papillon"},
+          {"value": 4, "text": "Serpent"}
+        ],
+        "answer": 1
+      }
+    ]
+  }'>
+  
+  <!-- A mettre dans un fichier JS Mais ca m'aide a bosser de faire sur une page faudra changer  -->
+  <script>
+  
+    document.addEventListener("DOMContentLoaded", function() {
+      
+      //  les données des questions depuis l'élément HTML
+      const questionsJson = document.getElementById("questions").value;
+      const questionsData = JSON.parse(questionsJson);
+      const questionsContainer = document.getElementById("questions-container");
+
+      // titre du quiz
+      const quizTitleDiv = document.getElementById("quiz-title");
+      const quizTitle = quizTitleDiv.querySelector("h2");
+      quizTitle.textContent = questionsData.title;
+      quizTitleDiv.classList.add("text-gray-300"); // Change la couleur du texte
+
+      // Parcours chaque question et les affiche faire gaffe a l'index
+      questionsData.questions.forEach((questionData, index) => {
+        
+        // La div pour chaque question et on met la question dedans
+        const questionDiv = document.createElement("div");
+        questionDiv.classList.add("mb-8", "p-4", "bg-white", "shadow-md", "rounded-md");
+
+        const questionTitle = document.createElement("h2");
+        questionTitle.classList.add("text-lg", "font-semibold", "mb-2", "text-gray-700");
+        questionTitle.textContent = questionData.question;
+        questionDiv.appendChild(questionTitle);
+
+        //La div pour chaque réponses + CheckBox 3 = Label
+        const answersDiv = document.createElement("div");
+        questionData.propositions.forEach((proposition, propositionIndex) => {
+ 
+          
+          const answerCheckbox = document.createElement("input");
+          answerCheckbox.setAttribute("type", "checkbox");
+          answerCheckbox.setAttribute("id", `question-${index}-proposition-${propositionIndex}`);
+          answerCheckbox.classList.add("mr-2");
+          answerCheckbox.setAttribute("data-question-index", index); // Identifie la question
+          answerCheckbox.setAttribute("data-proposition-index", propositionIndex); // Identifie la proposition
+          answersDiv.appendChild(answerCheckbox);
+
+     
+          const answerLabel = document.createElement("label");
+          answerLabel.setAttribute("for", `question-${index}-proposition-${propositionIndex}`);
+          answerLabel.classList.add("ms-2", "text-sm", "font-medium", "text-gray-700");
+          answerLabel.textContent = proposition.text;
+          answersDiv.appendChild(answerLabel);
+
+         
+          answersDiv.appendChild(document.createElement("br"));
+        });
+        questionDiv.appendChild(answersDiv);
+
+     
+        questionsContainer.appendChild(questionDiv);
+      });
+
+      // Écoute le clic sur le bouton "Envoyer" et stock les reponses dans une string 
+      document.getElementById("submit-btn").addEventListener("click", function() {
+        let userAnswersString = ""; 
+
+        // Boucle for chaque question --> Recupere checkbox coché --> Ajoute indice sinon f 
+        questionsData.questions.forEach((questionData, questionIndex) => {
+          
+          const checkboxes = document.querySelectorAll(`input[type="checkbox"][data-question-index="${questionIndex}"]:checked`);
+          if (checkboxes.length > 0) {
+         
+            checkboxes.forEach(checkbox => {
+              const propositionIndex = parseInt(checkbox.getAttribute("data-proposition-index"));
+              userAnswersString += propositionIndex;
+            });
+          } else {
+            userAnswersString += "f";
+          }
+        });
+
+        // Affiche les réponses dans la console mais normalement c'est  envoyé au backend
+        console.log("Réponses de l'utilisateur :", userAnswersString);
+
+        // Cache et affiche les bouton au submit
+        document.getElementById("submit-btn").classList.add("hidden");
+        document.getElementById("back-link").classList.remove("hidden");
+      });
+    });
+  </script>
+</body>
+</html>

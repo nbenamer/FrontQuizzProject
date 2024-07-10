@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un Quizz</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/flowbite/css/flowbite.min.css" rel="stylesheet">
+
+</head>
+<body class="bg-gray-900 text-gray-400 p-8">
+
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-5xl font-bold bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-900 bg-clip-text text-transparent">Quizzeo</h1>
+  
+    <div class="flex space-x-4">
+      <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded">Profile</button>
+      <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded">Faire un Quizz</button>
+    </div>
+  </div>
+
+  <div class="max-w-xl mx-auto mt-8">
+    <!-- Formulaire -->
+    <h2 class="text-3xl font-semibold mb-8 text-center">Création du Quizz</h2>
+
+    
+    <form id="quizz-form">
+     
+      <div class="mb-4">
+        <label for="quizz-title" class="block">Titre du Quizz :</label>
+        <input type="text" id="quizz-title" name="quizz-title" class="border border-gray-400 rounded px-3 py-2 w-full">
+      </div>
+
+      <!-- Container pour les questions -->
+      <div id="questions-container"></div>
+
+      <!--  les Boutons  -->
+      <button type="button" id="add-question-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded mb-4">Ajouter une question</button>
+
+     
+      <button type="button" id="toggle-poll-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded mb-4">Sondage : ON</button>
+
+      
+      <button type="submit" id="submit-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded">Soumettre</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Variable   questionscounter sondage et variable de stockage 
+      let questionCounter = 0;
+     
+      let isPoll = true;
+     
+      let selectedAnswersString = "";
+    
+      let quizzData = {
+        titre: "",
+        questions: []
+      };
+
+      //Construction du form dynamiquement Question 
+      document.getElementById("add-question-btn").addEventListener("click", function() {
+        questionCounter++;
+
+        // Créer un nouvel input pour la question
+        const questionInput = document.createElement("div");
+        questionInput.classList.add("mb-4", "border", "border-gray-400", "rounded", "px-3", "py-2");
+
+       
+        const questionTitle = document.createElement("label");
+        questionTitle.setAttribute("for", `question-${questionCounter}`);
+        questionTitle.classList.add("block", "text-gray-700", "font-bold", "mb-2");
+        questionTitle.textContent = `Question ${questionCounter} :`;
+        questionInput.appendChild(questionTitle);
+
+       
+        const questionField = document.createElement("input");
+        questionField.setAttribute("type", "text");
+        questionField.setAttribute("id", `question-${questionCounter}`);
+        questionField.setAttribute("name", `question-${questionCounter}`);
+        questionField.classList.add("border", "border-gray-400", "rounded", "px-3", "py-2", "w-full", "mb-2");
+        questionInput.appendChild(questionField);
+
+        // Construction proposition 
+        const propositionsContainer = document.createElement("div");
+        questionInput.appendChild(propositionsContainer);
+
+       
+        const addPropositionBtn = document.createElement("button");
+        addPropositionBtn.setAttribute("type", "button");
+        addPropositionBtn.classList.add("bg-gray-300", "hover:bg-gray-400", "text-gray-800", "font-semibold", "py-2", "px-4", "rounded", "mb-2");
+        addPropositionBtn.textContent = "Ajouter une proposition";
+        addPropositionBtn.addEventListener("click", function() {
+          const propositionCounter = propositionsContainer.querySelectorAll(".proposition").length + 1;
+
+        
+          const propositionInput = document.createElement("div");
+          propositionInput.classList.add("proposition", "mb-2");
+
+          // Label pour la proposition
+          const propositionLabel = document.createElement("label");
+          propositionLabel.classList.add("block", "text-gray-700", "font-bold", "mb-1");
+          propositionLabel.textContent = `Proposition ${propositionCounter} :`;
+          propositionInput.appendChild(propositionLabel);
+
+    
+          const propositionField = document.createElement("input");
+          propositionField.setAttribute("type", "text");
+          propositionField.setAttribute("id", `proposition-${questionCounter}-${propositionCounter}`);
+          propositionField.setAttribute("name", `proposition-${questionCounter}-${propositionCounter}`);
+          propositionField.classList.add("border", "border-gray-400", "rounded", "px-3", "py-2", "w-full", "mb-1");
+          propositionInput.appendChild(propositionField);
+
+          // If sondage ispool !ispool
+          if (isPoll) {
+            const answerCheckboxLabel = document.createElement("label");
+            answerCheckboxLabel.classList.add("block", "text-gray-700", "font-bold", "mb-1");
+            answerCheckboxLabel.textContent = "Réponse valide :";
+            propositionInput.appendChild(answerCheckboxLabel);
+
+            const answerCheckbox = document.createElement("input");
+            answerCheckbox.setAttribute("type", "checkbox");
+            answerCheckbox.setAttribute("id", `answer-${questionCounter}-${propositionCounter}`);
+            answerCheckbox.setAttribute("name", `answer-${questionCounter}`);
+            answerCheckbox.addEventListener("change", function() {
+              if (this.checked) {
+                selectedAnswersString += propositionCounter.toString();
+              } else {
+                selectedAnswersString = selectedAnswersString.replace(propositionCounter.toString(), "");
+              }
+            });
+            propositionInput.appendChild(answerCheckbox);
+          }
+
+          // Ajouter l'input au conteneur de propositions
+          propositionsContainer.appendChild(propositionInput);
+        });
+        questionInput.appendChild(addPropositionBtn);
+
+      
+        document.getElementById("questions-container").appendChild(questionInput);
+
+        // Créer un nouvel objet pour stocker les données de la question
+        const questionData = {
+          question: "",
+          propositions: []
+        };
+
+        // Push la question au tableau de données du quizz
+        quizzData.questions.push(questionData);
+      });
+
+      // Eventlistener click  le bouton "Activer/Désactiver les réponses"
+      document.getElementById("toggle-poll-btn").addEventListener("click", function() {
+        isPoll = !isPoll;
+        const btnText = isPoll ? "Sondage : ON" : "Sondage : OFF";
+        document.getElementById("toggle-poll-btn").textContent = btnText;
+
+        // Si isPoll est false, supprimer toutes les cases à cocher existantes
+        if (!isPoll) {
+          const checkboxes = document.querySelectorAll("input[type='checkbox']");
+          checkboxes.forEach(checkbox => {
+            checkbox.parentNode.remove();
+          });
+          selectedAnswersString = "";
+        }
+      });
+
+      // Submit du  formulaire
+      document.getElementById("quizz-form").addEventListener("submit", function(event) {
+        event.preventDefault(); // Empêcher le comportement par défaut du formulaire
+
+        // Récupérer  titre donnée question
+        quizzData.titre = document.getElementById("quizz-title").value;
+
+        // Récupérer les données des questions
+        const questions = document.querySelectorAll("[id^='question-']");
+        questions.forEach((question, index) => {
+          // Récupérer le texte de la question
+          quizzData.questions[index].question = question.value;
+
+          // Récupérer les données des propositions
+          const propositions = question.parentNode.querySelectorAll("[id^='proposition-']");
+          propositions.forEach((proposition, propositionIndex) => {
+            // Créer un objet pour stocker les données de la proposition
+            const propositionData = {
+              value: propositionIndex + 1,
+              text: proposition.value
+            };
+            // Push la proposition au tableau de propositions de la question
+            quizzData.questions[index].propositions.push(propositionData);
+          });
+        });
+
+        // Ajouter la chaîne de réponses sélectionnées à quizzData
+        quizzData.selectedAnswers = selectedAnswersString;
+
+        // Afficher les données du quizz dans la console
+        console.log("Données du quizz :", quizzData);
+
+      });
+    });
+  </script>
+</body>
+</html>

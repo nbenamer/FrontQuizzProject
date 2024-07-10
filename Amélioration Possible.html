@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title></title>
+  </head>
+  <body>
+      
+    <input type="hidden" name="questions" id="questions" value='[
+  {
+  "question": "Comment tu-vas ?",
+  "reponses": [
+      "Je vais bien",
+      "Pas trop trop",
+      "Très mal"
+    ],
+  "correction": 1
+  },
+  {
+  "question": "Quel âge as-tu ?",
+  "reponses": [
+      "Je vais bien",
+      "Pas trop trop",
+      "Très mal"
+    ],
+  "correction": 1
+  },
+  {
+  "question": "En quelle classe es-tu ?",
+  "reponses": [
+      "Je suis en 6eme",
+      "au collège",
+      "Très mal"
+    ],
+  "correction": 1
+  }
+]'>
+
+  <div x-data="quiz">
+    <button @click="add_question">Ajouter une question</button>
+
+
+      <template x-for="(question, index) in questions" :key="index">
+
+
+        <div>
+          <input type="text" :name="'questions_'+index" :id="'questions_'+index" x-model="question.question">
+        </div>
+
+      </template>
+  </div>
+
+<script>
+
+    console.log("caca");
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('quiz', () => ({
+          
+            questions: JSON.parse(document.querySelector('input[name=questions]').value),
+
+            add_question() {
+              var elem = new Object();
+              elem['question'] = '';
+              elem['reponses'] = [];
+              elem['correction'] = 0;
+              this.questions.push(elem);
+              console.log(this.questions);
+            },
+
+            remove_question(indexofquestion){
+              console.log('salut !');
+            }
+        }))
+    })
+</script>
+
+  </body>
+</html>

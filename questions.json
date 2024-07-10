@@ -1,0 +1,35 @@
+{
+  "questions": [
+    {
+      "question": "Quel est le plus grand animal terrestre ?",
+      "propositions": [
+        {"value": 1, "text": "Éléphant"},
+        {"value": 2, "text": "Girafe"},
+        {"value": 3, "text": "Rhinocéros"},
+        {"value": 4, "text": "Hippopotame"}
+      ],
+      "answer": 2
+    },
+    {
+      "question": "Quel animal est souvent associé à la sagesse dans la culture occidentale ?",
+      "propositions": [
+        {"value": 1, "text": "Chat"},
+        {"value": 2, "text": "Hibou"},
+        {"value": 3, "text": "Serpent"},
+        {"value": 4, "text": "Lion"}
+      ],
+      "answer": 2
+    },
+    {
+      "question": "Quel animal est connu pour sa capacité à changer de couleur ?",
+      "propositions": [
+        {"value": 1, "text": "Caméléon"},
+        {"value": 2, "text": "Grenouille"},
+        {"value": 3, "text": "Papillon"},
+        {"value": 4, "text": "Serpent"}
+      ],
+      "answer": 1
+    }
+   
+  ]
+}
